@@ -1,6 +1,5 @@
 import * as dao from "./dao.js";
 
-let currentUser = null;
 
 export default function UserRoutes(app) {
     const createUser = (req, res) => { };
@@ -35,7 +34,9 @@ export default function UserRoutes(app) {
             res.status(400).json({ message: "Username already in use" });
             return;
         }
-        currentUser = dao.createUser(req.body);
+
+        const currentUser = dao.createUser(req.body);
+        req.session["currentUser"] = currentUser;
         res.json(currentUser);
     };
     app.post("/api/users/signup", signup);
@@ -43,21 +44,33 @@ export default function UserRoutes(app) {
 
     const signin = (req, res) => {
         const { username, password } = req.body;
-        currentUser = dao.findUserByCredentials(username, password);
-        // Pending error checking
-        res.json(currentUser);
+        const currentUser = dao.findUserByCredentials(username, password);
+        if (currentUser) {
+            req.session["currentUser"] = currentUser;
+            res.json(currentUser);
+            console.log("Set session user in sign in");
+        } else {
+            res.status(401).json({ message: "Unable to login. Try again later." });
+        }
     };
     app.post("/api/users/signin", signin);
 
 
     const signout = (req, res) => {
-        currentUser = null;
+        req.session.destroy();
         res.sendStatus(200);
     };
     app.post("/api/users/signout", signout);
 
 
     const profile = (req, res) => {
+        const currentUser = req.session["currentUser"];
+        if (!currentUser) {
+            console.log("Not current user");
+            res.sendStatus(401);
+            return;
+        }
+        console.log("Current user");
         res.json(currentUser);
     };
     app.post("/api/users/profile", profile);
