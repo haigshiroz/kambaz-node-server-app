@@ -67,4 +67,12 @@ export default function CourseRoutes(app) {
     };
     app.post("/api/courses/:courseId/assignments", createAssignment);
 
+    const findPeopleForCourse = (req, res) => {
+        const { courseId } = req.params;
+
+        const people = dao.findPeopleForCourse(courseId)
+        res.send(people)
+    };
+    app.get("/api/courses/:courseId/people", findPeopleForCourse);
+
 }

@@ -45,3 +45,10 @@ export function updateCourse(courseId, courseUpdates) {
     Object.assign(course, courseUpdates);
     return course;
 }
+
+export function findPeopleForCourse(courseId) {
+    const { users, enrollments } = Database;
+
+    const people = users.filter((usr) => enrollments.some((enrollment) => enrollment.user === usr._id && enrollment.course === courseId))
+    return people;
+}
