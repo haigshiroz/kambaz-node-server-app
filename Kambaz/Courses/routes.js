@@ -4,75 +4,81 @@ import * as assignmentsDao from "../Assignments/dao.js";
 
 
 export default function CourseRoutes(app) {
-    const courses = (req, res) => {
-        const courses = dao.findAllCourses();
+    const courses = async (req, res) => {
+        const courses = await dao.findAllCourses();
         res.send(courses);
     };
     app.get("/api/courses", courses);
 
 
-    const deleteCourse = (req, res) => {
+    const createCourse = async (req, res) => {
+        const course = await dao.createCourse(req.body);
+        res.json(course);
+    };
+    app.post("/api/courses", createCourse);
+
+
+    const deleteCourse = async (req, res) => {
         const { courseId } = req.params;
-        const status = dao.deleteCourse(courseId);
+        const status = await dao.deleteCourse(courseId);
         res.send(status);
     };
     app.delete("/api/courses/:courseId", deleteCourse)
 
 
-    const updateCourse = (req, res) => {
+    const updateCourse = async (req, res) => {
         const { courseId } = req.params;
         const courseUpdates = req.body;
-        const status = dao.updateCourse(courseId, courseUpdates);
+        const status = await dao.updateCourse(courseId, courseUpdates);
         res.send(status);
     };
     app.put("/api/courses/:courseId", updateCourse);
 
 
-    const getModulesForCourse = (req, res) => {
+    const getModulesForCourse = async (req, res) => {
         const { courseId } = req.params;
-        const modules = modulesDao.findModulesForCourse(courseId);
+        const modules = await modulesDao.findModulesForCourse(courseId);
         res.json(modules);
     };
     app.get("/api/courses/:courseId/modules", getModulesForCourse);
 
 
-    const createModule = (req, res) => {
+    const createModule = async (req, res) => {
         const { courseId } = req.params;
         const module = {
             ...req.body,
             course: courseId,
         };
-        const newModule = modulesDao.createModule(module);
+        const newModule = await modulesDao.createModule(module);
         res.send(newModule);
     };
     app.post("/api/courses/:courseId/modules", createModule);
 
 
-    const getAssignmentsForCourse = (req, res) => {
+    const getAssignmentsForCourse = async (req, res) => {
         const { courseId } = req.params;
-        const assignments = assignmentsDao.findAssignmentsForCourse(courseId);
+        const assignments = await assignmentsDao.findAssignmentsForCourse(courseId);
         res.json(assignments);
     };
     app.get("/api/courses/:courseId/assignments", getAssignmentsForCourse);
 
 
-    const createAssignment = (req, res) => {
+    const createAssignment = async (req, res) => {
         const { courseId } = req.params;
         const assignment = {
             ...req.body,
             course: courseId,
         };
-        const newAssignment = assignmentsDao.createAssignment(assignment);
+        const newAssignment = await assignmentsDao.createAssignment(assignment);
         res.send(newAssignment);
     };
     app.post("/api/courses/:courseId/assignments", createAssignment);
 
-    const findPeopleForCourse = (req, res) => {
+    const findPeopleForCourse = async (req, res) => {
         const { courseId } = req.params;
 
-        const people = dao.findPeopleForCourse(courseId)
+        const people = await dao.findPeopleForCourse(courseId)
         res.send(people)
     };
     app.get("/api/courses/:courseId/people", findPeopleForCourse);
-
 }
