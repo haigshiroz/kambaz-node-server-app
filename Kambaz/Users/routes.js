@@ -105,36 +105,6 @@ export default function UserRoutes(app) {
     app.post("/api/users/profile", profile);
 
 
-
-    // const findCoursesForUser = async (req, res) => {
-    //     // Get current user
-    //     const currentUser = req.session["currentUser"];
-
-    //     // If there is no current user, return error
-    //     if (!currentUser) {
-    //         res.sendStatus(401);
-    //         return;
-    //     }
-
-    //     // If user is admin, get all courses
-    //     if (currentUser.role === "ADMIN") {
-    //         const courses = await courseDao.findAllCourses();
-    //         res.json(courses);
-    //         return;
-    //     }
-
-    //     // Get the user ID
-    //     let { uid } = req.params;
-    //     if (uid === "current") {
-    //         uid = currentUser._id;
-    //     }
-
-    //     // Get courses for that user
-    //     const courses = await enrollmentsDao.findCoursesForUser(uid);
-    //     res.json(courses);
-    // };
-    // app.get("/api/users/:uid/courses", findCoursesForUser);
-
     const findCoursesForUser = async (req, res) => {
         let { userId } = req.params;
         if (userId === "current") {
