@@ -1,6 +1,7 @@
 import * as dao from "./dao.js";
 import * as modulesDao from "../Modules/dao.js";
 import * as assignmentsDao from "../Assignments/dao.js";
+import * as enrollmentsDao from "../Enrollments/dao.js";
 
 
 export default function CourseRoutes(app) {
@@ -12,7 +13,16 @@ export default function CourseRoutes(app) {
 
 
     const createCourse = async (req, res) => {
+        // Create course
         const course = await dao.createCourse(req.body);
+
+        // Enroll the user who made the course
+        const currentUser = req.session["currentUser"];
+        if (currentUser) {
+            await enrollmentsDao.enrollUserInCourse(currentUser._id, course._id);
+        }
+
+        // Return the course
         res.json(course);
     };
     app.post("/api/courses", createCourse);
@@ -21,6 +31,7 @@ export default function CourseRoutes(app) {
     const deleteCourse = async (req, res) => {
         const { courseId } = req.params;
         const status = await dao.deleteCourse(courseId);
+        await enrollmentsDao.unenrollAllUsersFromCourse(courseId);
         res.send(status);
     };
     app.delete("/api/courses/:courseId", deleteCourse)
@@ -74,11 +85,19 @@ export default function CourseRoutes(app) {
     };
     app.post("/api/courses/:courseId/assignments", createAssignment);
 
-    const findPeopleForCourse = async (req, res) => {
-        const { courseId } = req.params;
+    // const findPeopleForCourse = async (req, res) => {
+    //     const { courseId } = req.params;
 
-        const people = await dao.findPeopleForCourse(courseId)
-        res.send(people)
+    //     const people = await dao.findPeopleForCourse(courseId)
+    //     res.send(people)
+    // };
+    // app.get("/api/courses/:courseId/people", findPeopleForCourse);
+
+
+    const findUsersForCourse = async (req, res) => {
+        const { cid } = req.params;
+        const users = await enrollmentsDao.findUsersForCourse(cid);
+        res.json(users);
     };
-    app.get("/api/courses/:courseId/people", findPeopleForCourse);
+    app.get("/api/courses/:cid/users", findUsersForCourse);
 }
