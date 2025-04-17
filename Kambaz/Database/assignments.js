@@ -77,9 +77,6 @@ export default [
         "display_grade_as": "POINTS",
         "submission_type": "ONLINE"
     },
-
-
-
     {
         "_id": "A301",
         "title": "Structural Design Task",
