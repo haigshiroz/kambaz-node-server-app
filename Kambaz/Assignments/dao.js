@@ -3,7 +3,6 @@ import model from "./model.js";
 
 
 export function findAssignmentsForCourse(courseId) {
-    console.log("Searching for assignments for course: " + courseId);
     return model.find({ course: courseId });
 }
 
